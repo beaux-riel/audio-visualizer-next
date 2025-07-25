@@ -2,57 +2,115 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Mic, MicOff } from "lucide-react";
+import {
+  getAverageVolume,
+  volumeToPercentage,
+  initializeAudioAnalysis,
+} from "../utils/audio";
+import Alert from "./Alert";
 
-const AudioVisualizer = () => {
+const AudioVisualizer: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const [audioData, setAudioData] = useState(new Uint8Array(0));
   const [error, setError] = useState<string | null>(null);
+  const [isMediaDevicesSupported, setIsMediaDevicesSupported] = useState(true);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const animationRef = useRef<number | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const startListening = async () => {
+  const handleToggleListening = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleToggleListening();
+    }
+  };
+
+  const startListening = async (): Promise<void> => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioContextRef.current = new (window.AudioContext ||
-        (window as typeof window & { webkitAudioContext: typeof AudioContext })
-          .webkitAudioContext)();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      sourceRef.current =
-        audioContextRef.current.createMediaStreamSource(stream);
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        setError("Media devices are not supported in this browser.");
+        setIsMediaDevicesSupported(false);
+        return;
+      }
 
-      sourceRef.current.connect(analyserRef.current);
-      analyserRef.current.fftSize = 256;
-      const bufferLength = analyserRef.current.frequencyBinCount;
-      dataArrayRef.current = new Uint8Array(bufferLength);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const { audioContext, analyser, dataArray, source } =
+        initializeAudioAnalysis(stream);
+
+      audioContextRef.current = audioContext;
+      analyserRef.current = analyser;
+      sourceRef.current = source;
+      dataArrayRef.current = dataArray;
 
       setIsListening(true);
       setError(null);
       animate();
-    } catch (err) {
-      setError(
-        "Microphone access denied. Please allow microphone access to use this feature."
-      );
+    } catch (err: unknown) {
+      let errorMessage = "An unknown error occurred";
+
+      if (err instanceof DOMException) {
+        switch (err.name) {
+          case "NotAllowedError":
+            errorMessage =
+              "Microphone access denied. Please allow microphone access to use this feature.";
+            break;
+          case "NotFoundError":
+            errorMessage =
+              "No microphone found. Please connect a microphone and try again.";
+            break;
+          case "NotReadableError":
+            errorMessage =
+              "Microphone is already in use by another application.";
+            break;
+          case "OverconstrainedError":
+            errorMessage = "Microphone does not meet the required constraints.";
+            break;
+          case "SecurityError":
+            errorMessage =
+              "Microphone access blocked due to security restrictions.";
+            break;
+          default:
+            errorMessage = `Microphone error: ${err.message}`;
+        }
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
       console.error("Error accessing microphone:", err);
     }
   };
 
-  const stopListening = () => {
-    if (animationRef.current) {
+  const stopListening = (): void => {
+    if (animationRef.current !== null) {
       cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
     }
     if (sourceRef.current) {
       sourceRef.current.disconnect();
+      sourceRef.current = null;
     }
     if (audioContextRef.current) {
       audioContextRef.current.close();
+      audioContextRef.current = null;
     }
+    analyserRef.current = null;
+    dataArrayRef.current = null;
     setIsListening(false);
   };
 
-  const animate = () => {
+  const animate = (): void => {
     if (!analyserRef.current || !dataArrayRef.current) return;
 
     analyserRef.current.getByteFrequencyData(dataArrayRef.current);
@@ -62,6 +120,14 @@ const AudioVisualizer = () => {
   };
 
   useEffect(() => {
+    // Check for media devices support on component mount
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setIsMediaDevicesSupported(false);
+      setError(
+        "Media devices are not supported in this browser. Please use a modern browser that supports microphone access."
+      );
+    }
+
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
@@ -72,18 +138,12 @@ const AudioVisualizer = () => {
     };
   }, []);
 
-  const getAverageVolume = (data: Uint8Array) => {
-    if (data.length === 0) return 0;
-    const sum = data.reduce((acc, val) => acc + val, 0);
-    return sum / data.length;
-  };
-
   const averageVolume = getAverageVolume(audioData);
-  const volumePercentage = Math.min(100, (averageVolume / 255) * 100);
+  const volumePercentage = volumeToPercentage(averageVolume);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 text-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="text-white">
+      <div className="w-full">
         <header className="text-center mb-12">
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">
             Audio Visualizer
@@ -98,17 +158,28 @@ const AudioVisualizer = () => {
           <div className="bg-black/30 backdrop-blur-lg rounded-2xl p-8 mb-8 border border-white/10">
             <div className="flex flex-col items-center justify-center mb-8">
               <button
-                onClick={isListening ? stopListening : startListening}
-                className={`flex items-center justify-center w-20 h-20 rounded-full mb-6 transition-all duration-300 ${
+                ref={buttonRef}
+                onClick={handleToggleListening}
+                onKeyDown={handleKeyDown}
+                disabled={!isMediaDevicesSupported}
+                aria-label={
                   isListening
-                    ? "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30"
-                    : "bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/30"
+                    ? "Stop microphone listening"
+                    : "Start microphone listening"
+                }
+                aria-pressed={isListening}
+                className={`flex items-center justify-center w-20 h-20 rounded-full mb-6 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-cyan-500/50 ${
+                  !isMediaDevicesSupported
+                    ? "bg-gray-500 cursor-not-allowed opacity-50"
+                    : isListening
+                      ? "bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/30"
+                      : "bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 shadow-lg shadow-cyan-500/30"
                 }`}
               >
                 {isListening ? (
-                  <MicOff size={32} className="text-white" />
+                  <MicOff size={32} className="text-white" aria-hidden="true" />
                 ) : (
-                  <Mic size={32} className="text-white" />
+                  <Mic size={32} className="text-white" aria-hidden="true" />
                 )}
               </button>
 
@@ -125,9 +196,26 @@ const AudioVisualizer = () => {
             </div>
 
             {error && (
-              <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 mb-6">
-                <p className="text-red-200">{error}</p>
-              </div>
+              <Alert type="error" title="Microphone Error" className="mb-6">
+                {error}
+              </Alert>
+            )}
+
+            {!isMediaDevicesSupported && (
+              <Alert
+                type="warning"
+                title="Browser Not Supported"
+                className="mb-6"
+              >
+                <p className="mb-2">
+                  Your browser doesn&apos;t support microphone access. This
+                  feature requires a modern browser with Web Audio API support.
+                </p>
+                <p className="text-sm">
+                  Please try using Chrome, Firefox, Safari, or Edge for the best
+                  experience.
+                </p>
+              </Alert>
             )}
 
             {isListening && (

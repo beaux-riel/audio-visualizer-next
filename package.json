@@ -14,8 +14,14 @@
     "test:watch": "vitest --watch",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
+    "test:unit": "vitest run src/utils/__tests__",
+    "test:integration": "vitest run src/components/__tests__",
+    "test:comprehensive": "vitest run src/components/__tests__/AudioVisualizer.comprehensive.test.tsx",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:all": "pnpm run test:unit && pnpm run test:integration && pnpm run test:e2e",
+    "test:ci": "./scripts/test-ci.sh",
     "prepare": "husky"
   },
   "dependencies": {
@@ -36,6 +42,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^4.7.0",
+    "@vitest/coverage-v8": "^3.2.4",
     "commitlint": "^19.8.1",
     "eslint": "^9",
     "eslint-config-next": "15.4.4",
@@ -48,6 +55,7 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "web-audio-test-api": "^0.5.2"
   }
 }

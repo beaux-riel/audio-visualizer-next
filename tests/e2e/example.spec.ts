@@ -11,5 +11,7 @@ test("audio visualizer is visible", async ({ page }) => {
   await page.goto("/");
 
   // Expect the audio visualizer component to be visible
-  await expect(page.getByText(/audio visualizer/i)).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /audio visualizer/i })
+  ).toBeVisible();
 });

@@ -10,21 +10,44 @@ export default defineConfig({
   use: {
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
+    // Enable microphone permissions for audio visualizer testing
+    permissions: ["microphone"],
+    launchOptions: {
+      channel: "chrome",
+      args: [
+        "--use-fake-ui-for-media-stream",
+        "--use-fake-device-for-media-stream",
+        "--allow-file-access-from-files",
+        "--disable-web-security",
+      ],
+    },
   },
 
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        // Run in headed mode for microphone access in development
+        headless: process.env.CI ? true : false,
+      },
     },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
+    // Note: Firefox and Safari have limited support for microphone permissions in E2E tests
+    // Uncomment these for cross-browser testing when not using microphone features
+    // {
+    //   name: "firefox",
+    //   use: {
+    //     ...devices["Desktop Firefox"],
+    //     headless: process.env.CI ? true : false,
+    //   },
+    // },
+    // {
+    //   name: "webkit",
+    //   use: {
+    //     ...devices["Desktop Safari"],
+    //     headless: process.env.CI ? true : false,
+    //   },
+    // },
   ],
 
   webServer: {
