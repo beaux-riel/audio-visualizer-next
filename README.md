@@ -89,4 +89,6 @@ The deployment is automated using GitHub Actions workflow defined in `.github/wo
 
 The deployment uses Next.js static export feature to generate a static site compatible with GitHub Pages.
 
+📋 **Detailed Setup Instructions**: See [GITHUB_PAGES_SETUP.md](./GITHUB_PAGES_SETUP.md) for step-by-step setup guide.
+
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
