@@ -1,4 +1,4 @@
-import AudioVisualizer from '../components/AudioVisualizer';
+import AudioVisualizer from "../components/AudioVisualizer";
 
 export default function Home() {
   return <AudioVisualizer />;

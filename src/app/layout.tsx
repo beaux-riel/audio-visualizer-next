@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Audio Visualizer",
-  description: "Real-time audio visualization with microphone input. Experience your voice through dynamic visual graphics.",
+  description:
+    "Real-time audio visualization with microphone input. Experience your voice through dynamic visual graphics.",
 };
 
 export default function RootLayout({

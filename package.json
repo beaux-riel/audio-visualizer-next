@@ -6,7 +6,17 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "prepare": "husky"
   },
   "dependencies": {
     "lucide-react": "^0.525.0",
@@ -15,14 +25,29 @@
     "react-dom": "19.1.0"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.54.1",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^4.7.0",
+    "commitlint": "^19.8.1",
     "eslint": "^9",
     "eslint-config-next": "15.4.4",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "jest": "^30.0.5",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^16.1.2",
+    "playwright": "^1.54.1",
+    "prettier": "^3.6.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }
