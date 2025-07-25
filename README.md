@@ -3,7 +3,7 @@
 [![CI](https://github.com/beaux-riel/audio-visualizer-next/actions/workflows/ci.yml/badge.svg)](https://github.com/beaux-riel/audio-visualizer-next/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/beaux-riel/audio-visualizer-next/branch/main/graph/badge.svg)](https://codecov.io/gh/beaux-riel/audio-visualizer-next)
 
-🚀 **Live Demo**: [audio-visualizer-next.vercel.app](https://audio-visualizer-next.vercel.app)
+🚀 **Live Demo**: [audio-visualizer-next](https://beaux-riel.github.io/audio-visualizer-next/)
 
 Audio Visualizer Next is a dynamic web application designed to visualize audio input in real-time using advanced audio processing techniques. Leveraging [Next.js](https://nextjs.org) and modern web technologies, it ensures optimal performance and smooth visualization.
 
