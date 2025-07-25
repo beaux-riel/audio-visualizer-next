@@ -84,7 +84,7 @@ The deployment is automated using GitHub Actions workflow defined in `.github/wo
 
 1. Enable GitHub Pages in your repository settings
 2. Set the source to "GitHub Actions"
-3. Every push to the main branch triggers automatic deployment via GitHub Actions
+3. Every push to the main/master branch triggers automatic deployment via GitHub Actions
 4. The site will be available at `https://[username].github.io/[repository-name]`
 
 The deployment uses Next.js static export feature to generate a static site compatible with GitHub Pages.
