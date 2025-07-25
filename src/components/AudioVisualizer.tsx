@@ -131,7 +131,7 @@ const AudioVisualizer: React.FC = () => {
     analyserRef.current.getByteFrequencyData(dataArrayRef.current);
     setAudioData(new Uint8Array(dataArrayRef.current));
 
-    if (typeof window !== "undefined" && window.requestAnimationFrame) {
+    if (typeof window !== "undefined") {
       animationRef.current = requestAnimationFrame(animate);
     }
   };

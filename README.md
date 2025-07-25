@@ -1,9 +1,10 @@
 # Audio Visualizer Next
 
 [![CI](https://github.com/beaux-riel/audio-visualizer-next/actions/workflows/ci.yml/badge.svg)](https://github.com/beaux-riel/audio-visualizer-next/actions/workflows/ci.yml)
+[![Deploy](https://github.com/beaux-riel/audio-visualizer-next/actions/workflows/deploy.yml/badge.svg)](https://github.com/beaux-riel/audio-visualizer-next/actions/workflows/deploy.yml)
 [![codecov](https://codecov.io/gh/beaux-riel/audio-visualizer-next/branch/main/graph/badge.svg)](https://codecov.io/gh/beaux-riel/audio-visualizer-next)
 
-🚀 **Live Demo**: [audio-visualizer-next.vercel.app](https://audio-visualizer-next.vercel.app)
+🚀 **Live Demo**: [beaux-riel.github.io/audio-visualizer-next](https://beaux-riel.github.io/audio-visualizer-next)
 
 Audio Visualizer Next is a dynamic web application designed to visualize audio input in real-time using advanced audio processing techniques. Leveraging [Next.js](https://nextjs.org) and modern web technologies, it ensures optimal performance and smooth visualization.
 
@@ -16,7 +17,7 @@ Audio Visualizer Next is a dynamic web application designed to visualize audio i
 - **Styling**: Tailwind CSS
 - **Testing**: Vitest, Playwright
 - **CI/CD**: GitHub Actions
-- **Deployment**: Vercel
+- **Deployment**: GitHub Pages
 
 ## Local Development
 
@@ -70,22 +71,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Production Deployment
 
-This project is configured for zero-config deployment on Vercel with the following setup:
+This project is configured for deployment on GitHub Pages with the following setup:
 
 - **Build Command**: `pnpm run build`
-- **Output Directory**: `.next`
+- **Output Directory**: `out`
 - **Install Command**: `pnpm install`
-- **Framework**: Next.js
+- **Framework**: Next.js (Static Export)
 
-The deployment configuration is defined in `vercel.json` for optimal performance and build settings.
+The deployment is automated using GitHub Actions workflow defined in `.github/workflows/deploy.yml`.
 
-### Deploy on Vercel
+### Deploy on GitHub Pages
 
-1. Connect your GitHub repository to Vercel
-2. The build settings are automatically configured via `vercel.json`
-3. Every push to the main branch triggers automatic deployment
-4. Pull requests create preview deployments
+1. Enable GitHub Pages in your repository settings
+2. Set the source to "GitHub Actions"
+3. Every push to the main branch triggers automatic deployment via GitHub Actions
+4. The site will be available at `https://[username].github.io/[repository-name]`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The deployment uses Next.js static export feature to generate a static site compatible with GitHub Pages.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
